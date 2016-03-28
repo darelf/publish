@@ -9,6 +9,7 @@
   "author": "Darel Finkbeiner <darelf@me.com>",
   "license": "ISC",
   "dependencies": {
+    "glob": "^7.0.3",
     "gray-matter": "^2.0.2",
     "marked": "^0.3.5",
     "mustache": "^2.2.1",

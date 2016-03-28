@@ -1,5 +1,7 @@
 var argv = require('yargs').argv
 var fs = require('fs')
+var path = require('path')
+var glob = require('glob')
 var xtend = require('xtend')
 var matter = require('gray-matter')
 var marked = require('marked')
@@ -12,13 +14,12 @@ var revsort = function(arr,key) {
 }
 
 var list_posts = function(directory, ending, size) {
-  var files = fs.readdirSync(directory)
+  var search_path = directory + '/**/*.' + ending
+  var files = glob.sync(search_path)
   var items = []
   files.forEach(function(v,i,a) {
-    if (v.endsWith(ending)) {
-      var m = matter.read(directory + '/' + v)
-      items.push(m.data)
-    }
+    var m = matter.read(v)
+    items.push(m.data)
   })
   return revsort(items, 'publish')
 }
@@ -31,14 +32,14 @@ var render = function(filename, template, data, partials) {
 }
 
 var load_templates = function(baseDir, ending) {
-  var files = fs.readdirSync(baseDir)
+  var search_path = baseDir + '/**/*.' + ending
+  var files = glob.sync(search_path)
   var templates = {}
   files.forEach(function(v,i,a) {
-    if (v.endsWith(ending)) {
-      var s = fs.readFileSync(baseDir + '/' + v, 'utf8')
-      var name = v.substr(0, v.length - ending.length)
-      templates[name] = s
-    }
+    var s = fs.readFileSync(v, 'utf8')
+    var base = path.basename(v)
+    var name = base.substr(0, base.length - (ending.length + 1))
+    templates[name] = s
   })
   return templates
 }
