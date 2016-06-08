@@ -1,7 +1,7 @@
 ---
 title: Start A Blog, They Said
-publish: 2016-03-20
-tags: blog
+publish: 2016-03-20T12:10:31-04:00
+tags: [blog, first]
 ---
 Consider this a "first post".
 

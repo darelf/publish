@@ -6,6 +6,9 @@ var xtend = require('xtend')
 var matter = require('gray-matter')
 var marked = require('marked')
 var mustache = require('mustache')
+var moment = require('moment')
+
+var date_format = 'ddd, MMM Do YYYY, h:mm:ss a'
 
 var revsort = function(arr,key) {
   return arr.sort(function(a,b) {
@@ -25,9 +28,15 @@ var list_posts = function(directory, ending, size) {
 }
 
 var render = function(filename, template, data, partials) {
+  var dformat = date_format
+  if (arguments['4']) {
+    dformat = arguments['4']
+  }
   var parsed = matter.read(filename)
   var jsonData = xtend(parsed.data, data)
+  var publishdate = moment(jsonData.publish).format(dformat)
   jsonData.content = marked(parsed.content)
+  jsonData.publish = publishdate
   return mustache.render(template, jsonData, partials)
 }
 

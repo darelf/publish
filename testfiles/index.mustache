@@ -1,4 +1,6 @@
 {{> head}}
     <h1>{{title}}</h1>
-    <p>{{{content}}}</p>
+    <p>{{publish}}</p>
+    <p>{{#tags}}<span>{{.}}</span>{{/tags}}</p>
+    <div>{{{content}}}</div>
 {{> foot}}
