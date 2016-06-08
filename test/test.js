@@ -11,11 +11,11 @@ test('load templates', function(t) {
 
 test('partials', function(t) {
   t.plan(2)
-  var templates = publish.load_templates('testfiles', 'mustache')
-  var output = publish.render('testfiles/start-a-blog.md', templates.index, {}, templates)
+  var templates = publish.load_templates('testfiles/templates', 'mustache')
+  var output = publish.render('testfiles/postdir/start-a-blog.md', templates.index, {}, templates)
   var outputFile = fs.readFileSync('testfiles/output.html', 'utf8')
   t.equals(outputFile, output, 'correct output')
-  var output2 = publish.render('testfiles/start-a-blog.md', templates.index, {}, templates, 'YYYY')
+  var output2 = publish.render('testfiles/postdir/start-a-blog.md', templates.index, {}, templates, 'YYYY')
   var outputFile2 = fs.readFileSync('testfiles/output2.html', 'utf8')
   t.equals(outputFile2, output2, 'custom date format')
 })
@@ -26,4 +26,12 @@ test('post list', function(t) {
   t.equals(2, list.length, 'found 2 items')
   t.equals('I Started A Blog', list[0].title, 'check first title')
   t.equals('Start A Blog, They Said', list[1].title, 'check second title')
+})
+
+test('tag list', function(t) {
+  t.plan(3)
+  var list = publish.list_tags('testfiles', 'md')
+  t.equals(Object.keys(list).length, 2, 'found 2 tags')
+  t.equals(list.blog, 2, 'check "blog" tag')
+  t.equals(list.first, 1, 'check "first" tag')
 })

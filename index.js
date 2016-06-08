@@ -16,7 +16,7 @@ var revsort = function(arr,key) {
   })
 }
 
-var list_posts = function(directory, ending, size) {
+var list_items = function(directory, ending) {
   var search_path = directory + '/**/*.' + ending
   var files = glob.sync(search_path)
   var items = []
@@ -24,7 +24,24 @@ var list_posts = function(directory, ending, size) {
     var m = matter.read(v)
     items.push(m.data)
   })
-  return revsort(items, 'publish')
+  return items
+}
+
+var list_posts = function(directory, ending, size) {
+  var items = list_items(directory, ending)
+  return revsort(items, 'publish').slice(0,size+1)
+}
+
+var list_tags = function(directory, ending) {
+  var tags = {}
+  var items = list_items(directory, ending)
+  items.forEach(function(v,i,a) {
+    v.tags.forEach(function(t) {
+      if (tags[t]) tags[t] += 1
+      else tags[t] = 1
+    })
+  })
+  return tags
 }
 
 var render = function(filename, template, data, partials) {
@@ -56,3 +73,4 @@ var load_templates = function(baseDir, ending) {
 module.exports.load_templates = load_templates
 module.exports.render = render
 module.exports.list_posts = list_posts
+module.exports.list_tags = list_tags
