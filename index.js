@@ -51,7 +51,7 @@ var render = function(filename, template, data, partials) {
   }
   var parsed = matter.read(filename)
   var jsonData = xtend(parsed.data, data)
-  var publishdate = moment(jsonData.publish).format(dformat)
+  var publishdate = moment.utc(jsonData.publish).format(dformat)
   jsonData.content = marked(parsed.content)
   jsonData.publish = publishdate
   return mustache.render(template, jsonData, partials)
