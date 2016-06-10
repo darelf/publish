@@ -23,11 +23,13 @@ test('partials', function(t) {
 })
 
 test('post list', function(t) {
-  t.plan(3)
-  var list = publish.list_posts()
+  t.plan(4)
+  var list = publish.list_posts(10)
   t.equals(2, list.length, 'found 2 items')
   t.equals('I Started A Blog', list[0].title, 'check first title')
   t.equals('Start A Blog, They Said', list[1].title, 'check second title')
+  list = publish.list_posts(1)
+  t.equals(1, list.length, 'truncate to 1 item')
 })
 
 test('tag list', function(t) {
