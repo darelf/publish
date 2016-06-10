@@ -2,6 +2,8 @@ var publish = require('../index')
 var fs = require('fs')
 var test = require('tape')
 
+publish.load_items_from('testfiles', 'md')
+
 test('load templates', function(t) {
   t.plan(2)
   var templates = publish.load_templates('testfiles', 'mustache')
@@ -22,7 +24,7 @@ test('partials', function(t) {
 
 test('post list', function(t) {
   t.plan(3)
-  var list = publish.list_posts('testfiles', 'md', 5)
+  var list = publish.list_posts()
   t.equals(2, list.length, 'found 2 items')
   t.equals('I Started A Blog', list[0].title, 'check first title')
   t.equals('Start A Blog, They Said', list[1].title, 'check second title')
@@ -30,7 +32,7 @@ test('post list', function(t) {
 
 test('tag list', function(t) {
   t.plan(3)
-  var list = publish.list_tags('testfiles', 'md')
+  var list = publish.list_tags()
   t.equals(Object.keys(list).length, 2, 'found 2 tags')
   t.equals(list.blog, 2, 'check "blog" tag')
   t.equals(list.first, 1, 'check "first" tag')

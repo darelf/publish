@@ -6,9 +6,11 @@ var xtend = require('xtend')
 var matter = require('gray-matter')
 var marked = require('marked')
 var mustache = require('mustache')
-var moment = require('moment')
+var moment = require('moment-timezone')
 
-var date_format = 'ddd, MMM Do YYYY, h:mm:ss a'
+var date_format = 'ddd, MMM Do YYYY, h:mm:ss a (z)'
+
+var cached_items = {}
 
 var revsort = function(arr,key) {
   return arr.sort(function(a,b) {
@@ -16,31 +18,37 @@ var revsort = function(arr,key) {
   })
 }
 
-var list_items = function(directory, ending) {
+var load_items_from = function(directory, ending) {
+  cached_items = {}
   var search_path = directory + '/**/*.' + ending
   var files = glob.sync(search_path)
-  var items = []
   files.forEach(function(v,i,a) {
     var m = matter.read(v)
-    items.push(m.data)
+    var slug = path.basename(v, '.' + ending)
+    cached_items[slug] = m.data
+    cached_items[slug].filename = v
   })
-  return items
+  return cached_items
 }
 
-var list_posts = function(directory, ending, size) {
-  var items = list_items(directory, ending)
-  return revsort(items, 'publish').slice(0,size+1)
+
+var list_posts = function() {
+  var items = []
+  for (var i in cached_items) {
+    items.push(cached_items[i])
+  }
+  return revsort(items, 'publish')
 }
 
-var list_tags = function(directory, ending) {
+var list_tags = function() {
   var tags = {}
-  var items = list_items(directory, ending)
-  items.forEach(function(v,i,a) {
-    v.tags.forEach(function(t) {
+  
+  for(var i in cached_items) {
+    cached_items[i].tags.forEach(function(t) {
       if (tags[t]) tags[t] += 1
       else tags[t] = 1
     })
-  })
+  }
   return tags
 }
 
@@ -51,7 +59,7 @@ var render = function(filename, template, data, partials) {
   }
   var parsed = matter.read(filename)
   var jsonData = xtend(parsed.data, data)
-  var publishdate = moment.utc(jsonData.publish).format(dformat)
+  var publishdate = moment.tz(jsonData.publish, 'UTC').format(dformat)
   jsonData.content = marked(parsed.content)
   jsonData.publish = publishdate
   return mustache.render(template, jsonData, partials)
@@ -70,6 +78,7 @@ var load_templates = function(baseDir, ending) {
   return templates
 }
 
+module.exports.load_items_from = load_items_from
 module.exports.load_templates = load_templates
 module.exports.render = render
 module.exports.list_posts = list_posts
