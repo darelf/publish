@@ -40,7 +40,7 @@ var server = http.createServer(function(req,res) {
     if (slug) {
       var item = publish.item_by_slug(slug)
       if (item) {
-        output = publish.render(item.filename, templates.post, {}, templates)
+        output = publish.render(item.filename, templates.article, {}, templates)
       } else {
         output = "Not Found"
       }
