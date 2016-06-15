@@ -51,4 +51,4 @@ var server = http.createServer(function(req,res) {
   }
 })
 
-server.listen(8888)
+server.listen(argv.p)
