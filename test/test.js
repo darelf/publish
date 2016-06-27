@@ -39,3 +39,11 @@ test('tag list', function(t) {
   t.equals(list.blog, 2, 'check "blog" tag')
   t.equals(list.first, 1, 'check "first" tag')
 })
+
+test('post list by tag', function(t) {
+  t.plan(2)
+  var list = publish.list_by_tag('blog')
+  t.equals(list.length, 2, 'check "blog" tag has 2 items')
+  list = publish.list_by_tag('first')
+  t.equals(list.length, 1, 'check "first" tag has 1 item')
+})

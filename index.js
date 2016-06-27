@@ -55,7 +55,7 @@ var list_posts = function(max) {
 
 var list_by_tag = function(tag) {
   var result = obj_filter( cached_items, function(o) {
-    return (o.tags && o.tags.contains(tag))
+    return (o.tags && o.tags.indexOf(tag) > -1)
   })
   var items = []
   for (var i in result) {
