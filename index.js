@@ -18,6 +18,16 @@ var revsort = function(arr,key) {
   })
 }
 
+var obj_filter = function( obj, p ) {
+  var result = {}
+  for (var key in obj) {
+    if (obj.hasOwnProperty(key) && p(obj[key])) {
+      result[key] = obj[key]
+    }
+  }
+  return result
+}
+
 var load_items_from = function(directory, ending) {
   cached_items = {}
   var search_path = directory + '/**/*.' + ending
@@ -35,13 +45,23 @@ var item_by_slug = function(slug) {
   return cached_items[slug]
 }
 
-
 var list_posts = function(max) {
   var items = []
   for (var i in cached_items) {
     items.push(cached_items[i])
   }
   return revsort(items, 'publish').slice(0, max)
+}
+
+var list_by_tag = function(tag) {
+  var result = obj_filter( cached_items, function(o) {
+    return (o.tags && o.tags.contains(tag))
+  })
+  var items = []
+  for (var i in result) {
+    items.push(result[i])
+  }
+  return revsort(items, 'publish').slice(0, 10)  
 }
 
 var list_tags = function() {
@@ -77,9 +97,9 @@ var render = function(filename, template, data, partials) {
   return mustache.render(template, jsonData, partials)
 }
 
-var render_index = function(template, partials) {
+var render_index = function(template, data, partials) {
   var p = list_posts(10)
-  var data = {posts: []}
+  data.posts = []
   p.forEach(function(v,i,a) {
     var jsonData = get_render_data(v.filename, {}, date_format)
     data.posts.push(jsonData)
@@ -107,3 +127,4 @@ module.exports.render = render
 module.exports.render_index = render_index
 module.exports.list_posts = list_posts
 module.exports.list_tags = list_tags
+module.exports.list_by_tag = list_by_tag

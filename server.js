@@ -9,9 +9,11 @@ var argv = require('yargs')
   .help('h')
   .describe('d', 'where to find the markdown blog posts')
   .describe('t', 'where to find the mustache templates')
+  .describe('s', 'where the static files are')
   .describe('p', 'port to use')
   .default('d', 'posts')
   .default('t', 'templates')
+  .default('s', './static')
   .default('p', 8888)
   .argv
 
@@ -30,10 +32,12 @@ var get_slug = function(p) {
 var server = http.createServer(function(req,res) {
   var p = parse(req.url).pathname
   if (p.startsWith('/static/')) {
-    var pname = '.' + p
+    var pname = p.replace('/static', argv.s)
     res.setHeader('Content-Type', mime.lookup(pname))
     var stream = fs.createReadStream(pname)
     stream.pipe(res)
+  } else if (p.startsWith('/tags/')) {
+    
   } else {
     var slug = get_slug(p)
     var output
@@ -45,7 +49,7 @@ var server = http.createServer(function(req,res) {
         output = "Not Found"
       }
     } else {
-      output = publish.render_index(templates.index, templates)
+      output = publish.render_index(templates.index, {subhead: 'Most Recent First'}, templates)
     }
     res.end(output)
   }
