@@ -37,7 +37,10 @@ var server = http.createServer(function(req,res) {
     var stream = fs.createReadStream(pname)
     stream.pipe(res)
   } else if (p.startsWith('/tags/')) {
-    
+    var tagname = p.substring(6)
+    var list = publish.list_by_tag(tagname)
+    var output = publish.render_list(list, templates.index, {subhead: tagname}, templates)
+    res.end(output)
   } else {
     var slug = get_slug(p)
     var output

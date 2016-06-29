@@ -61,7 +61,7 @@ var list_by_tag = function(tag) {
   for (var i in result) {
     items.push(result[i])
   }
-  return revsort(items, 'publish').slice(0, 10)  
+  return revsort(items, 'publish')
 }
 
 var list_tags = function() {
@@ -97,14 +97,18 @@ var render = function(filename, template, data, partials) {
   return mustache.render(template, jsonData, partials)
 }
 
-var render_index = function(template, data, partials) {
-  var p = list_posts(10)
+var render_list = function(list, template, data, partials) {
   data.posts = []
-  p.forEach(function(v,i,a) {
+  list.forEach(function(v,i,a) {
     var jsonData = get_render_data(v.filename, {}, date_format)
     data.posts.push(jsonData)
   })
-  return mustache.render(template, data, partials)
+  return mustache.render(template, data, partials)  
+}
+
+var render_index = function(template, data, partials) {
+  var p = list_posts(10)
+  return render_list(p, template, data, partials)
 }
 
 var load_templates = function(baseDir, ending) {
@@ -124,6 +128,7 @@ module.exports.load_items_from = load_items_from
 module.exports.item_by_slug = item_by_slug
 module.exports.load_templates = load_templates
 module.exports.render = render
+module.exports.render_list = render_list
 module.exports.render_index = render_index
 module.exports.list_posts = list_posts
 module.exports.list_tags = list_tags
